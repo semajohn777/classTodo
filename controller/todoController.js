@@ -7,7 +7,7 @@ const createTodo = async(req, res)=>{
 
     try {
         if(!title || !body){
-            res.status(401).json({msg: "Please provide the nessces item"})
+            res.status(401).json({msg: "Please provide the neccessary item"})
         }
         const todo =  await users.create({
             title,
@@ -36,6 +36,9 @@ const getSingleTodo = async(req, res)=>{
     const {id} = req.params
     try {
         const singletodo = await users.findById(id)
+        // if(singletodo) {
+        //  return res.status(200).json({ msg: "single todo created"})
+        // }
         res.status(200).json({singletodo, msg: "single todo created"})
     } catch (error) {
         console.log(error);
@@ -63,15 +66,50 @@ const deleteTodo = async(req, res)=>{
 
 const updateTodo = async(req, res)=>{
     const {id} = req.params
+    const {title, body} = req.body
     try {
+        if(!title || !body){
+            res.status(401).json({msg: "Please provide all input before updating"})
+        }
         const existTodo = await users.findById(id)
-        const updateTodo = await findByIdAndUpdate(existTodo, req.body, {new: true,  runValidators: true})
-        res.status(202).json({data: updateTodo})
+        if(existTodo) {
+            const updateTodo = await users.findByIdAndUpdate(existTodo, req.body, {new: true, runValidators:true})
+
+            const allOfThem = await users.find()
+            return res.status(201).json({ allOfThem })
+        }
+
+       return res.status(202).json()
     } catch (error) {
-        
+        console.log(error);
     }
 }
 //overwirte
+
+
+// const updateTodo = async (req, res)=>{
+//     const { id } = req.params
+//     const { title, body } = req.body
+
+//     try {
+//         const data = await users.findById(id)
+
+//         if(data){
+//             if(!title || !body){
+//                 return res.status(404).json({ msg:"input necessary details"})
+//             }
+//             const Updating = await users.findByIdAndUpdate(data, { title, body }, {new: true, runValidators: true, 
+//                 //overwrite: true
+//             })
+//             const allOfThem = await users.find()
+//             return res.status(201).json({ allOfThem })
+//         }
+//         return res.json({ msg: 'Stuff not Found'})
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 
 
 
